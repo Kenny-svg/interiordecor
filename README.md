@@ -12,7 +12,7 @@ npm run seed
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Image generation and speech-to-text stay on **mock** until you set a live provider. Sample stills are labelled on the Imagine desk.
+Open [http://localhost:3000](http://localhost:3000). Image generation and speech-to-text stay on **mock** until a live provider is set. Sample stills are labelled on the Imagine desk. Consult letters are addressed to **kennnyfagbenro44@gmail.com** and, while `EMAIL_PROVIDER=console`, they land in `/studio/inbox` rather than Gmail.
 
 ```bash
 npm run build
@@ -21,7 +21,7 @@ npm run lint
 
 ## Live providers
 
-Set `AI_IMAGE_PROVIDER` to `openai`, `fal`, or `replicate`, and `AI_STT_PROVIDER` to `openai`, with the matching key. If the key is missing, the app falls back to mock.
+Stay on mock until the client is ready. Then set `AI_IMAGE_PROVIDER` to `openai`, `fal`, or `replicate`, and `AI_STT_PROVIDER` to `openai`, with the matching key. If the key is missing, the app falls back to mock.
 
 **Cost.** Live image calls are billed by the provider. Four complimentary stills per guest is four paid generations. Keep mock for local work unless you intend to spend.
 
@@ -45,6 +45,5 @@ Set `AI_IMAGE_PROVIDER` to `openai`, `fal`, or `replicate`, and `AI_STT_PROVIDER
 
 - Home, Work, Services, About, Consult
 - Imagine: write, voice, optional photograph, four concept stills, send to the studio
-- Inquiry + brief + confirmation email (console / Resend / SMTP)
+- Inquiry + brief + confirmation email (console / Resend / SMTP), drop-in `kennnyfagbenro44@gmail.com`
 - Studio inbox at `/studio/inbox`
-# interiordecor
