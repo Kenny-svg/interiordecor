@@ -5,6 +5,8 @@ import { Container, Eyebrow } from "@/components/ui";
 import { getPublicBrief } from "@/lib/imagine/handoff";
 import { site } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Consult",
   description: "Write to the studio. We reply within two working days.",

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Eyebrow } from "@/components/ui";
 import { listInquiries } from "@/lib/inquiries";
+import { isInboxAuthed } from "@/lib/studio-auth";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Inbox",
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function InboxPage() {
-  const rows = await listInquiries();
+  const rows = (await isInboxAuthed()) ? await listInquiries() : [];
 
   return (
     <Container className="py-10 sm:py-12">

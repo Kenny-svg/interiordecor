@@ -13,6 +13,8 @@ import { getSessionId } from "@/lib/session";
 import { spaceIdFromRoom } from "@/lib/spaces";
 import { isStyleTagId } from "@/lib/styles";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Imagine a space",
   description:

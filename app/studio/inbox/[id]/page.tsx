@@ -7,6 +7,8 @@ import { Button, Container, Eyebrow } from "@/components/ui";
 import { getInquiry, inquiryImages, inquiryTags } from "@/lib/inquiries";
 import { labelsForTags } from "@/lib/styles";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Brief",
   robots: { index: false, follow: false },

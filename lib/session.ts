@@ -1,5 +1,5 @@
 import { cookies, headers } from "next/headers";
-import { prisma } from "@/lib/db";
+import { isMissingSchemaError, prisma } from "@/lib/db";
 import { SESSION_COOKIE, SESSION_HEADER } from "@/lib/session-constants";
 import { site } from "@/lib/site";
 
@@ -16,11 +16,18 @@ export async function getSessionId(): Promise<string | null> {
 }
 
 export async function ensureSession(id: string) {
-  return prisma.session.upsert({
-    where: { id },
-    update: {},
-    create: { id },
-  });
+  try {
+    return await prisma.session.upsert({
+      where: { id },
+      update: {},
+      create: { id },
+    });
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return { id, generationCount: 0, packCredits: 0 };
+    }
+    throw error;
+  }
 }
 
 export async function getBudget(sessionId: string | null): Promise<{
@@ -33,19 +40,26 @@ export async function getBudget(sessionId: string | null): Promise<{
     return { remaining: limit, used: 0, limit };
   }
 
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-  });
+  try {
+    const session = await prisma.session.findUnique({
+      where: { id: sessionId },
+    });
 
-  if (!session) {
-    return { remaining: limit, used: 0, limit };
+    if (!session) {
+      return { remaining: limit, used: 0, limit };
+    }
+
+    const allowance = limit + session.packCredits;
+    const remaining = Math.max(0, allowance - session.generationCount);
+    return {
+      remaining,
+      used: session.generationCount,
+      limit: allowance,
+    };
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return { remaining: limit, used: 0, limit };
+    }
+    throw error;
   }
-
-  const allowance = limit + session.packCredits;
-  const remaining = Math.max(0, allowance - session.generationCount);
-  return {
-    remaining,
-    used: session.generationCount,
-    limit: allowance,
-  };
 }

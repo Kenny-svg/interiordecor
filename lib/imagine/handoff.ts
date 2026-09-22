@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { isMissingSchemaError, prisma } from "@/lib/db";
 import {
   parseBriefImages,
   parseStringArray,
@@ -79,21 +79,35 @@ export async function persistHandoff(input: {
 }
 
 export async function getPublicBrief(id: string): Promise<PublicBrief | null> {
-  const row = await prisma.imagineBrief.findUnique({ where: { id } });
-  if (!row) {
-    return null;
+  try {
+    const row = await prisma.imagineBrief.findUnique({ where: { id } });
+    if (!row) {
+      return null;
+    }
+    return toPublicBrief(row);
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return null;
+    }
+    throw error;
   }
-  return toPublicBrief(row);
 }
 
 export async function getBriefByMagicHash(hash: string): Promise<PublicBrief | null> {
-  const row = await prisma.imagineBrief.findUnique({
-    where: { magicTokenHash: hash },
-  });
-  if (!row || !row.magicExpiresAt || row.magicExpiresAt.getTime() < Date.now()) {
-    return null;
+  try {
+    const row = await prisma.imagineBrief.findUnique({
+      where: { magicTokenHash: hash },
+    });
+    if (!row || !row.magicExpiresAt || row.magicExpiresAt.getTime() < Date.now()) {
+      return null;
+    }
+    return toPublicBrief(row);
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return null;
+    }
+    throw error;
   }
-  return toPublicBrief(row);
 }
 
 export function toPublicBrief(row: {

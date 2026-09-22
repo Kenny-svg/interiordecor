@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { prisma } from "@/lib/db";
+import { isMissingSchemaError, prisma } from "@/lib/db";
 import { inquirySubject, sendStudioLetter } from "@/lib/email";
 import { parseBriefImages, parseStringArray } from "@/lib/imagine/brief-types";
 import { getPublicBrief } from "@/lib/imagine/handoff";
@@ -83,13 +83,27 @@ export async function persistInquiry(
 }
 
 export async function listInquiries() {
-  return prisma.inquiry.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    return await prisma.inquiry.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export async function getInquiry(id: string) {
-  return prisma.inquiry.findUnique({ where: { id } });
+  try {
+    return await prisma.inquiry.findUnique({ where: { id } });
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function markInquiryReplied(id: string) {

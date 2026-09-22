@@ -16,6 +16,9 @@ const noIndexGenerated = [
 
 const nextConfig: NextConfig = {
   agentRules: false,
+  outputFileTracingIncludes: {
+    "*": ["./prisma/dev.db"],
+  },
   async redirects() {
     return [
       { source: "/approach", destination: "/services", permanent: true },

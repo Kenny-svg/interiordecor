@@ -27,6 +27,8 @@ Stay on mock until the client is ready. Then set `AI_IMAGE_PROVIDER` to `openai`
 
 `PUBLIC_APP_URL` (or `SITE_URL`) is the origin used in emails and magic links.
 
+On Vercel, set `DATABASE_URL` to `file:./dev.db` if it is not already set. The build now runs `prisma db push` so the Inquiry table exists before Next prerenders `/studio/inbox`. SQLite on Vercel is ephemeral — enough for a mock demo, not a lasting mailbox.
+
 ## Seed
 
 `npm run seed` prepares local media folders. The photographed portfolio is curated in `lib/projects.ts` (`SAMPLE_PORTFOLIO`). Replace that file with the studio’s own camera work; do not treat Unsplash stand-ins as client jobs.

@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
-import { prisma } from "@/lib/db";
+import { isMissingSchemaError, prisma } from "@/lib/db";
 import { toPublicGeneration } from "@/lib/generations";
 import { DISCLOSURE } from "@/lib/prompt";
 import { getSessionId } from "@/lib/session";
 import type { PublicImage } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Kept concepts",
@@ -16,13 +18,7 @@ export const metadata: Metadata = {
 
 export default async function FavoritesPage() {
   const sessionId = await getSessionId();
-  const rows = sessionId
-    ? await prisma.favorite.findMany({
-        where: { sessionId },
-        include: { generation: true },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
+  const rows = sessionId ? await loadFavorites(sessionId) : [];
 
   const items = rows
     .map((row) => {
@@ -85,4 +81,19 @@ export default async function FavoritesPage() {
       )}
     </Container>
   );
+}
+
+async function loadFavorites(sessionId: string) {
+  try {
+    return await prisma.favorite.findMany({
+      where: { sessionId },
+      include: { generation: true },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    if (isMissingSchemaError(error)) {
+      return [];
+    }
+    throw error;
+  }
 }

@@ -3,6 +3,8 @@ import { InboxLogin } from "@/components/studio/InboxLogin";
 import { logoutInbox } from "@/app/studio/inbox/actions";
 import { isInboxAuthed } from "@/lib/studio-auth";
 
+export const dynamic = "force-dynamic";
+
 export default async function InboxLayout({ children }: { children: ReactNode }) {
   const authed = await isInboxAuthed();
   if (!authed) {
