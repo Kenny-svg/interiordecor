@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id              String         @id
+  generationCount Int            @default(0)
+  packCredits     Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  generations     Generation[]
+  favorites       Favorite[]
+  inquiries       Inquiry[]
+  briefs          ImagineBrief[]
+}
+
+model Generation {
+  id           String     @id @default(cuid())
+  sessionId    String
+  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  prompt       String
+  transcript   String?
+  styleTags    String
+  hasRoomPhoto Boolean    @default(false)
+  summary      String
+  studioPrompt String
+  images       String
+  createdAt    DateTime   @default(now())
+  favorites    Favorite[]
+}
+
+model Favorite {
+  id           String     @id @default(cuid())
+  sessionId    String
+  session      Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  generationId String
+  generation   Generation @relation(fields: [generationId], references: [id], onDelete: Cascade)
+  imageId      String
+  createdAt    DateTime   @default(now())
+
+  @@unique([sessionId, generationId, imageId])
+}
+
+model ImagineBrief {
+  id             String    @id @default(cuid())
+  sessionId      String
+  session        Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  prompt         String
+  transcript     String    @default("")
+  studioPrompt   String    @default("")
+  styleTags      String    @default("[]")
+  summary        String    @default("")
+  selectedIds    String    @default("[]")
+  images         String
+  photoUrl       String?
+  magicTokenHash String?   @unique
+  magicExpiresAt DateTime?
+  createdAt      DateTime  @default(now())
+  inquiries      Inquiry[]
+}
+
+model Inquiry {
+  id               String        @id @default(cuid())
+  sessionId        String?
+  session          Session?      @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  briefId          String?
+  brief            ImagineBrief? @relation(fields: [briefId], references: [id], onDelete: SetNull)
+  name             String
+  email            String
+  phone            String?
+  city             String        @default("")
+  projectType      String
+  timeline         String        @default("")
+  budgetBand       String        @default("")
+  message          String
+  kind             String        @default("consult")
+  status           String        @default("new")
+  generationIds    String        @default("[]")
+  photoUrl         String?
+  imagineSessionId String?
+  prompt           String        @default("")
+  transcript       String        @default("")
+  studioPrompt     String        @default("")
+  styleTags        String        @default("[]")
+  summary          String        @default("")
+  selectedImageIds String        @default("[]")
+  images           String        @default("[]")
+  repliedAt        DateTime?
+  createdAt        DateTime      @default(now())
+}
