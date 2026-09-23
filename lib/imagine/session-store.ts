@@ -51,7 +51,7 @@ export type ImagineSnapshot = {
   paintIds: string[];
   customHexes: string[];
   chairId: string | null;
-  pieces: { key: string; pieceId: string; chairId?: string; x: number; y: number }[];
+  pieces: { key: string; pieceId: string; chairId?: string; x: number; y: number; size?: number }[];
   placementId: string;
   chairX: number;
   lightId: string;

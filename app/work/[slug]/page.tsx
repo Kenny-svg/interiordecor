@@ -137,11 +137,14 @@ export default async function ProjectPage({ params }: Props) {
           Start from this look.
         </p>
         <p className="mt-4 max-w-lg text-sm leading-6 text-muted">
-          Opens Imagine with this room’s direction. The stills remain concepts,
-          not a specification.
+          Opens Imagine with this room’s direction. It is an illustration, not a
+          photograph of the finished work.
         </p>
-        <p className="mt-8">
+        <p className="mt-8 flex flex-wrap gap-3">
           <ButtonLink href={imagineHrefFor(project)}>Start from this look</ButtonLink>
+          <ButtonLink href="/shop" variant="outline">
+            Shop pieces
+          </ButtonLink>
         </p>
         <div className="mt-12 flex flex-col gap-3 text-sm">
           <TextLink href="/work">All work</TextLink>

@@ -49,6 +49,7 @@ import {
   nextPieceSlot,
   paintHex,
   parseDesign,
+  pieceSize,
   PLASTER,
   wallHexes,
   type CurtainId,
@@ -301,6 +302,7 @@ export function ImagineStudio({
       pieceId: id,
       x: x ?? slot.x,
       y: y ?? slot.y,
+      size: 1,
     };
     patchSnapshot({
       chairId: id,
@@ -332,6 +334,21 @@ export function ImagineStudio({
       piece.key === key ? { ...piece, x, y } : piece,
     );
     patchSnapshot({ pieces, chairX: x });
+  }
+
+  function scalePiece(key: string, size: number) {
+    const pieces = design.pieces.map((piece) =>
+      piece.key === key ? { ...piece, size: pieceSize({ size }) } : piece,
+    );
+    patchSnapshot({ pieces });
+  }
+
+  function nudgePieceSize(id: FurnitureId, delta: number) {
+    const last = [...design.pieces].reverse().find((piece) => piece.pieceId === id);
+    if (!last) {
+      return;
+    }
+    scalePiece(last.key, pieceSize(last) + delta);
   }
 
   function toggleConstraint(id: string) {
@@ -702,6 +719,10 @@ export function ImagineStudio({
             <Notice>Sample stills. The camera is not live.</Notice>
           </div>
         ) : null}
+        <Notice>
+          This desk is an illustration. It is not a photograph of the room, and
+          not how the finished work will look.
+        </Notice>
         <SpacePicker onSelect={pickSpace} />
       </div>
     );
@@ -709,16 +730,17 @@ export function ImagineStudio({
 
   return (
     <div className="flex flex-col lg:grid lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:items-start lg:gap-x-12">
-      <div className="order-1 sticky top-14 z-20 min-w-0 overflow-hidden bg-paper py-2 lg:col-start-2 lg:row-start-1 lg:self-start lg:top-[4.5rem] lg:py-8">
+      <div className="order-1 sticky top-14 z-10 min-w-0 overflow-hidden bg-paper py-2 lg:col-start-2 lg:row-start-1 lg:self-start lg:top-[4.5rem] lg:py-8">
         <DesignCanvas
           design={design}
           tags={tags}
           constraints={constraints}
           onMove={movePiece}
           onDropPiece={(id, x, y) => addPiece(id, x, y)}
+          onScale={scalePiece}
         />
       </div>
-      <aside className="order-2 min-w-0 overflow-x-hidden bg-paper-2 lg:col-start-1 lg:row-start-1 lg:row-span-2">
+      <aside className="order-2 min-w-0 overflow-x-hidden bg-paper-2 lg:col-start-1 lg:row-start-1">
         <div className="space-y-8 p-4 sm:p-10">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -743,6 +765,10 @@ export function ImagineStudio({
           ) : null}
 
           {demo ? <Notice>Sample stills. The camera is not live.</Notice> : null}
+
+          <Notice>
+            An illustration of this room. Not a photograph, and not a specification.
+          </Notice>
 
           <StyleTagPicker selected={tags} onChange={setTags} disabled={busy} />
 
@@ -790,6 +816,7 @@ export function ImagineStudio({
             onSetWallHex={setWallHex}
             onAddPiece={addPiece}
             onRemovePiece={removePiece}
+            onNudgeSize={nudgePieceSize}
             onLight={(id: LightId) => patchSnapshot({ lightId: id })}
             onCurtain={(id: CurtainId) => patchSnapshot({ curtainId: id })}
           />
@@ -939,9 +966,9 @@ export function ImagineStudio({
         </div>
       </aside>
 
-      <div className="order-3 min-w-0 lg:col-start-2 lg:row-start-2">
+      <div className="relative z-30 order-3 min-w-0 bg-paper pt-8 lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:border-t lg:border-line lg:pt-10">
         {canvas !== "empty" || outputs.length > 0 ? (
-        <div className="mt-8">
+        <div>
         <ConceptCanvas
           status={canvas}
           concepts={outputs}

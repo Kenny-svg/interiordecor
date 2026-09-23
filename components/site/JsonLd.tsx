@@ -12,6 +12,8 @@ export function JsonLd() {
     founder: {
       "@type": "Person",
       name: site.principal,
+      jobTitle: "Principal",
+      image: site.principalPortrait.src,
     },
   };
 

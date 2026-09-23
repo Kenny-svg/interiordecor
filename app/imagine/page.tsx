@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Imagine a space",
   description:
-    "Choose a living room, an office, a suite. Pick a palette, place the furniture that belongs there, light, and dress it. Stills come back as a brief — not a specification.",
+    "A simple illustration of a living room, an office, a suite. Not a photograph, and not a specification — a brief for the studio in Lagos.",
 };
 
 type Props = {
@@ -42,14 +42,14 @@ export default async function ImaginePage({ searchParams }: Props) {
 
   return (
     <Container className="pt-12 pb-16 sm:pt-16">
-      <Eyebrow>Imagine</Eyebrow>
+      <Eyebrow>Illustration</Eyebrow>
       <h1 className="mt-4 max-w-3xl font-display text-5xl text-ink sm:text-6xl">
-        Choose the space. A palette, the furniture that belongs, then light.
+        Choose the space. This is an illustration.
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-8 text-ink-soft">
-        A living room, a private office, a reception — any place that needs a
-        professional finish. What you make on the canvas becomes a brief for the
-        studio in Lagos. Not a specification, and not a quote.
+        A living room, a private office, a reception — drawn simply, so we can
+        talk. It is not a photograph of your room, not a specification, and not
+        a quote. The studio in Lagos still writes the work.
       </p>
       {resumeBrief ? (
         <div className="mt-10">

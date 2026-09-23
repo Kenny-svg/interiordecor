@@ -6,7 +6,10 @@ import {
   getPalette,
   getSpace,
   isFurnitureId,
+  MAX_PIECE_SIZE,
+  MIN_PIECE_SIZE,
   PIECE_DRAG,
+  pieceSize,
   wallHexes,
   type FurnitureId,
   type SpaceDesign,
@@ -19,15 +22,24 @@ export function DesignCanvas({
   constraints,
   onMove,
   onDropPiece,
+  onScale,
 }: {
   design: SpaceDesign;
   tags: string[];
   constraints: string[];
   onMove: (key: string, x: number, y: number) => void;
   onDropPiece: (id: FurnitureId, x: number, y: number) => void;
+  onScale: (key: string, size: number) => void;
 }) {
   const frame = useRef<HTMLDivElement>(null);
+  const gesture = useRef<{
+    key: string;
+    mode: "move" | "resize";
+    size: number;
+    y: number;
+  } | null>(null);
   const [dragKey, setDragKey] = useState<string | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [over, setOver] = useState(false);
   const space = getSpace(design.spaceId);
   const palette = getPalette(design.paletteId);
@@ -39,6 +51,7 @@ export function DesignCanvas({
     coast: tags.includes("coastal"),
     unoccupied: constraints.includes("no-people"),
   };
+  const selected = design.pieces.find((piece) => piece.key === selectedKey);
 
   function atFloor(event: { clientX: number; clientY: number }) {
     const rect = frame.current?.getBoundingClientRect();
@@ -48,25 +61,45 @@ export function DesignCanvas({
     return pointerToFloor(event.clientX, event.clientY, rect);
   }
 
-  function startDrag(key: string, event: PointerEvent<SVGGElement>) {
+  function startDrag(
+    key: string,
+    event: PointerEvent<SVGGElement>,
+    mode: "move" | "resize",
+  ) {
     event.preventDefault();
+    const piece = design.pieces.find((item) => item.key === key);
+    gesture.current = {
+      key,
+      mode,
+      size: pieceSize(piece),
+      y: event.clientY,
+    };
     setDragKey(key);
+    setSelectedKey(key);
     frame.current?.setPointerCapture(event.pointerId);
   }
 
   function moveDrag(event: PointerEvent<HTMLDivElement>) {
-    if (!dragKey) {
+    const current = gesture.current;
+    if (!current) {
       return;
     }
-    const next = atFloor(event);
-    onMove(dragKey, next.x, next.y);
+    if (current.mode === "resize") {
+      const next = current.size + (current.y - event.clientY) / 140;
+      onScale(current.key, Math.min(MAX_PIECE_SIZE, Math.max(MIN_PIECE_SIZE, next)));
+      return;
+    }
+    const floor = atFloor(event);
+    onMove(current.key, floor.x, floor.y);
   }
 
   function endDrag(event: PointerEvent<HTMLDivElement>) {
-    if (dragKey) {
-      const next = atFloor(event);
-      onMove(dragKey, next.x, next.y);
+    const current = gesture.current;
+    if (current?.mode === "move") {
+      const floor = atFloor(event);
+      onMove(current.key, floor.x, floor.y);
     }
+    gesture.current = null;
     setDragKey(null);
   }
 
@@ -114,6 +147,11 @@ export function DesignCanvas({
           dragKey ? "cursor-grabbing" : "",
           over ? "ring-1 ring-ink" : "",
         )}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) {
+            setSelectedKey(null);
+          }
+        }}
         onPointerMove={moveDrag}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
@@ -130,14 +168,39 @@ export function DesignCanvas({
           curtainId={design.curtainId}
           pieces={design.pieces}
           interactive
-          activeKey={dragKey}
+          activeKey={dragKey ?? selectedKey}
           onPiecePointerDown={startDrag}
           mood={mood}
         />
+        {selected ? (
+          <div className="absolute bottom-3 right-3 z-10 flex gap-2">
+            <button
+              type="button"
+              aria-label="Make smaller"
+              disabled={pieceSize(selected) <= MIN_PIECE_SIZE}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => onScale(selected.key, pieceSize(selected) - 0.15)}
+              className="flex size-11 items-center justify-center border border-ink bg-paper text-lg text-ink disabled:opacity-30"
+            >
+              −
+            </button>
+            <button
+              type="button"
+              aria-label="Make larger"
+              disabled={pieceSize(selected) >= MAX_PIECE_SIZE}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => onScale(selected.key, pieceSize(selected) + 0.15)}
+              className="flex size-11 items-center justify-center border border-ink bg-paper text-lg text-ink disabled:opacity-30"
+            >
+              +
+            </button>
+          </div>
+        ) : null}
       </div>
       <figcaption className="mt-2 text-xs leading-5 text-muted sm:mt-3 sm:text-sm sm:leading-6">
+        Illustration — not a photograph.{" "}
         {notes.length > 0 ? `${notes.join(" · ")}. ` : ""}
-        Drag a piece to place it.
+        Drag a piece to place it. Tap it, then +/− to change size.
       </figcaption>
     </figure>
   );

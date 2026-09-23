@@ -1,8 +1,8 @@
 "use client";
 
 import type { PointerEvent } from "react";
-import { PieceGraphic } from "@/components/imagine/PieceGraphic";
-import { getFurniture, type PlacedPiece, type Space } from "@/lib/spaces";
+import { PiecePhoto, pieceBox } from "@/components/imagine/PiecePhoto";
+import { getFurniture, pieceSize, type PlacedPiece, type Space } from "@/lib/spaces";
 
 const PLASTER = "#ebe6dc";
 
@@ -24,7 +24,11 @@ export function EmptyRoom({
   pieces?: PlacedPiece[];
   interactive?: boolean;
   activeKey?: string | null;
-  onPiecePointerDown?: (key: string, event: PointerEvent<SVGGElement>) => void;
+  onPiecePointerDown?: (
+    key: string,
+    event: PointerEvent<SVGGElement>,
+    mode: "move" | "resize",
+  ) => void;
   mood?: {
     evening?: boolean;
     keepWindows?: boolean;
@@ -244,19 +248,27 @@ export function EmptyRoom({
 
       {sortedPieces(pieces ?? []).map((piece) => {
         const kind = piece.pieceId;
-        const extra = kind === "bed" ? 1.2 : 1;
+        const extra =
+          kind === "bed" || kind === "sofa"
+            ? 1.15
+            : kind === "dining-table" || kind === "conference"
+              ? 1.08
+              : 1;
         const anchor = floorAnchor(piece.x, piece.y, box);
         const active = activeKey === piece.key;
+        const { w, h, y } = pieceBox(kind);
         return (
           <g
             key={piece.key}
-            transform={`translate(${anchor.x}, ${anchor.y}) scale(${anchor.scale * extra})`}
+            transform={`translate(${anchor.x}, ${anchor.y}) scale(${anchor.scale * extra * pieceSize(piece)})`}
             data-piece-key={piece.key}
             onPointerDown={
               interactive && onPiecePointerDown
                 ? (event) => {
                     event.stopPropagation();
-                    onPiecePointerDown(piece.key, event);
+                    const target = event.target as SVGElement | null;
+                    const resize = Boolean(target?.closest("[data-resize='true']"));
+                    onPiecePointerDown(piece.key, event, resize ? "resize" : "move");
                   }
                 : undefined
             }
@@ -266,9 +278,18 @@ export function EmptyRoom({
             }}
           >
             {active ? (
-              <ellipse cx="0" cy="10" rx="90" ry="22" fill="none" stroke="#1c1916" strokeWidth="3" opacity="0.35" />
+              <rect
+                x={-w / 2 - 8}
+                y={y - 8}
+                width={w + 16}
+                height={h + 28}
+                fill="none"
+                stroke="#1c1916"
+                strokeWidth={4}
+                opacity={0.4}
+              />
             ) : null}
-            <PieceGraphic kind={kind} />
+            <PiecePhoto kind={kind} showHandle={Boolean(interactive && active)} />
           </g>
         );
       })}
@@ -309,7 +330,7 @@ function floorAnchor(xPct: number, depthPct: number, box: Box) {
   const left = box.l + t * (80 - box.l);
   const right = box.r + t * (1520 - box.r);
   const x = left + (xPct / 100) * (right - left);
-  const scale = 0.46 + t * 0.74;
+  const scale = 0.95 + t * 1.15;
   return { x, y, scale };
 }
 

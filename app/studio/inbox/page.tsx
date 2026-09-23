@@ -19,7 +19,7 @@ export default async function InboxPage() {
       <Eyebrow>Briefs</Eyebrow>
       <h1 className="mt-4 font-display text-4xl text-ink sm:text-5xl">Letters.</h1>
       <p className="mt-3 max-w-xl text-base leading-7 text-ink-soft">
-        New room briefs from Imagine and the consult form.
+        Letters from the consult form. Shop orders live under Orders.
       </p>
       {rows.length === 0 ? (
         <p className="mt-10 text-sm text-muted">None yet.</p>

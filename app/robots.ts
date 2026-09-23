@@ -6,7 +6,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/generated/", "/api/", "/studio/inbox", "/favorites"],
+        disallow: [
+          "/generated/",
+          "/api/",
+          "/studio/inbox",
+          "/studio/products",
+          "/studio/orders",
+          "/favorites",
+          "/cart",
+          "/checkout",
+          "/order",
+        ],
       },
     ],
   };

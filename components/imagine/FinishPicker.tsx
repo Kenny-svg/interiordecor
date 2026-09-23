@@ -1,14 +1,17 @@
 "use client";
 
-import { PieceGraphic } from "@/components/imagine/PieceGraphic";
+import { PieceThumb } from "@/components/imagine/PiecePhoto";
 import {
   curtains,
   kitFor,
   lights,
+  MAX_PIECE_SIZE,
   MAX_PIECES,
+  MIN_PIECE_SIZE,
   palettes,
   paints,
   PIECE_DRAG,
+  pieceSize,
   PLASTER,
   wallHexes,
   type CurtainId,
@@ -28,6 +31,7 @@ export function FinishPicker({
   onSetWallHex,
   onAddPiece,
   onRemovePiece,
+  onNudgeSize,
   onLight,
   onCurtain,
 }: {
@@ -37,6 +41,7 @@ export function FinishPicker({
   onSetWallHex: (index: number, hex: string) => void;
   onAddPiece: (id: FurnitureId) => void;
   onRemovePiece: (id: FurnitureId) => void;
+  onNudgeSize: (id: FurnitureId, delta: number) => void;
   onLight: (id: LightId) => void;
   onCurtain: (id: CurtainId) => void;
 }) {
@@ -121,16 +126,18 @@ export function FinishPicker({
           Furniture
         </legend>
         <p className="mt-2 text-sm text-muted">
-          Already placed for this room. Change counts, or drag a piece on the
-          room.
+          Already placed for this room. Drag onto the room. Tap a piece, then +/− to size it.
         </p>
         <ul className="mt-3 space-y-2">
           {kit.map((item) => {
-            const count = design.pieces.filter((piece) => piece.pieceId === item.id).length;
+            const placed = design.pieces.filter((piece) => piece.pieceId === item.id);
+            const count = placed.length;
+            const last = placed[placed.length - 1];
+            const size = pieceSize(last);
             return (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 border border-line px-3 py-2"
+                className="flex flex-wrap items-center justify-between gap-2 border border-line px-3 py-2"
               >
                 <div
                   draggable={!disabled && !atPieceMax}
@@ -142,15 +149,32 @@ export function FinishPicker({
                   className="flex min-w-0 flex-1 cursor-grab items-center gap-3 active:cursor-grabbing"
                 >
                   <span className="relative size-11 shrink-0 overflow-hidden bg-paper">
-                    <svg viewBox="-90 -80 180 120" className="h-full w-full" aria-hidden>
-                      <g transform="scale(0.42)">
-                        <PieceGraphic kind={item.id} />
-                      </g>
-                    </svg>
+                    <PieceThumb kind={item.id} />
                   </span>
                   <span className="text-sm text-ink">{item.label}</span>
                 </div>
                 <span className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={disabled || !last || size <= MIN_PIECE_SIZE}
+                    aria-label={`Make ${item.label} smaller`}
+                    onClick={() => onNudgeSize(item.id, -0.15)}
+                    className="flex size-11 items-center justify-center border border-line text-lg text-ink disabled:opacity-30"
+                  >
+                    −
+                  </button>
+                  <span className="w-8 text-center text-[11px] tabular-nums text-muted">
+                    {Math.round(size * 100)}%
+                  </span>
+                  <button
+                    type="button"
+                    disabled={disabled || !last || size >= MAX_PIECE_SIZE}
+                    aria-label={`Make ${item.label} larger`}
+                    onClick={() => onNudgeSize(item.id, 0.15)}
+                    className="flex size-11 items-center justify-center border border-line text-lg text-ink disabled:opacity-30"
+                  >
+                    +
+                  </button>
                   <button
                     type="button"
                     disabled={disabled || count === 0}
@@ -158,7 +182,7 @@ export function FinishPicker({
                     onClick={() => onRemovePiece(item.id)}
                     className="flex size-11 items-center justify-center border border-line text-lg text-ink disabled:opacity-30"
                   >
-                    −
+                    ×
                   </button>
                   <span className="w-6 text-center text-sm tabular-nums">{count}</span>
                   <button

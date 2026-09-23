@@ -8,18 +8,23 @@ export const site = {
   tagline: "Rooms, offices, and places with a point of view.",
   offer: "Decoration for homes, offices, and places that need a professional finish.",
   description:
-    "Interior decoration for homes, offices, and public rooms in Nigeria. Imagine a space, then the studio specifies and makes it.",
+    "Interior decoration for homes, offices, and public rooms in Nigeria. Furniture from the studio shop; Imagine is an illustration, then the studio specifies and makes it.",
   freeGenerations: 3,
   voiceMinSeconds: 8,
   voiceMaxSeconds: 45,
   reply: "two working days",
   area: "Lagos, Abuja, Port Harcourt, and places we can reach",
+  principalPortrait: {
+    src: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=80",
+    alt: "Ellery Hale, principal of Hale Studio",
+  },
 } as const;
 
 export const nav = [
   { href: "/work", label: "Work" },
-  { href: "/services", label: "Services" },
+  { href: "/shop", label: "Shop" },
   { href: "/imagine", label: "Imagine" },
+  { href: "/services", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/consult", label: "Consult" },
 ] as const;
@@ -71,7 +76,7 @@ export const processSteps = [
   },
   {
     title: "Imagine",
-    body: "Choose the space. Paint, seat, light, and dress it on the canvas. A brief, not a specification.",
+    body: "An illustration of the space — a brief, not a photograph, and not a specification.",
   },
   {
     title: "Specify",

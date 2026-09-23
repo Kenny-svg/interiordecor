@@ -67,3 +67,15 @@ export async function persistUploadPublic(
   await writeFile(path.join(generatedDir, filename), bytes);
   return `/generated/${filename}`;
 }
+
+const productsDir = path.join(process.cwd(), "public", "products");
+
+export async function persistProductPhoto(
+  bytes: Buffer,
+  ext: "png" | "jpg" | "webp",
+): Promise<string> {
+  await mkdir(productsDir, { recursive: true });
+  const filename = `${randomUUID()}.${ext}`;
+  await writeFile(path.join(productsDir, filename), bytes);
+  return `/products/${filename}`;
+}

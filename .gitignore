@@ -48,6 +48,16 @@ next-env.d.ts
 /public/generated/*
 !/public/generated/.gitkeep
 
+# studio product photographs
+/public/products/*
+!/public/products/.gitkeep
+
+# leftover furniture cutouts — Imagine is illustration-only
+/public/furniture/
+
+# editor / agent scratch
+:memory:.ses
+
 # local data
 /prisma/dev.db
 /prisma/dev.db-journal

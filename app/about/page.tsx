@@ -61,9 +61,9 @@ export default function AboutPage() {
         <section>
           <Eyebrow>Imagine</Eyebrow>
           <p className="mt-4 max-w-md text-base leading-7 text-ink-soft">
-            If you arrive with stills, we look at them as we would a tearing
-            from a magazine: useful, incomplete, a way to talk. The decorator
-            remains the author.
+            If you arrive with an illustration, we look at it as we would a
+            tearing from a magazine: useful, incomplete, a way to talk. The
+            decorator remains the author.
           </p>
           <p className="mt-8">
             <ButtonLink href="/consult">Write to the studio</ButtonLink>

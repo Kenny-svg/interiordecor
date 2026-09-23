@@ -5,7 +5,7 @@ import { services } from "@/lib/services";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "Full-service decoration, e-design, styling, and consults. The visualizer prepares a brief; a designer still leads.",
+    "Full-service decoration, e-design, styling, and consults. Pieces from the shop; a designer still leads.",
 };
 
 export default function ServicesPage() {
@@ -46,12 +46,12 @@ export default function ServicesPage() {
       <section className="mt-20 max-w-2xl border border-line p-8 sm:p-10">
         <Eyebrow>Imagine</Eyebrow>
         <h2 className="mt-4 font-display text-3xl">
-          The visualizer prepares the brief. A&nbsp;designer still&nbsp;leads.
+          An illustration of the room. A&nbsp;designer still&nbsp;leads.
         </h2>
         <p className="mt-4 text-base leading-7 text-ink-soft">
-          Stills from a note or a photograph are concepts — not a specification,
-          and not a quote. Ellery Hale remains the author of the work. You can
-          write to the studio without using Imagine at all.
+          Imagine is a simple drawing — not a photograph of your space, not a
+          specification, and not a quote. Ellery Hale remains the author of the
+          work. You can write to the studio without using it at all.
         </p>
         <p className="mt-8 flex flex-wrap gap-4">
           <ButtonLink href="/consult">Write to the studio</ButtonLink>

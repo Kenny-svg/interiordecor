@@ -22,8 +22,8 @@ export function Footer() {
               {item.label}
             </Link>
           ))}
-          <Link href="/favorites" className="text-ink hover:text-ink-soft">
-            Kept concepts
+          <Link href="/cart" className="text-ink hover:text-ink-soft">
+            Cart
           </Link>
         </nav>
         <div className="text-sm text-muted">

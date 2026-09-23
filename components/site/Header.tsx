@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { CartLink } from "@/components/cart/CartLink";
 import { nav, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -57,16 +58,20 @@ export function Header() {
               </Link>
             );
           })}
+          <CartLink />
         </nav>
-        <button
-          type="button"
-          className="lg:hidden text-[12px] uppercase tracking-[0.18em] text-ink"
-          aria-expanded={open}
-          aria-controls={menuId}
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? "Close" : "Menu"}
-        </button>
+        <div className="flex items-center gap-6 lg:hidden">
+          <CartLink />
+          <button
+            type="button"
+            className="text-[12px] uppercase tracking-[0.18em] text-ink"
+            aria-expanded={open}
+            aria-controls={menuId}
+            onClick={() => setOpen((value) => !value)}
+          >
+            {open ? "Close" : "Menu"}
+          </button>
+        </div>
       </div>
       {open ? (
         <div
@@ -84,6 +89,13 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/cart"
+              className="font-display text-4xl text-ink"
+              onClick={() => setOpen(false)}
+            >
+              Cart
+            </Link>
           </nav>
         </div>
       ) : null}

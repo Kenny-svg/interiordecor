@@ -292,6 +292,17 @@ export const furniture = [
 export type FurnitureId = (typeof furniture)[number]["id"];
 export type FurnitureItem = (typeof furniture)[number];
 
+export const MIN_PIECE_SIZE = 0.65;
+export const MAX_PIECE_SIZE = 2.5;
+
+export function pieceSize(piece: { size?: number } | null | undefined): number {
+  const value = piece?.size;
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.min(MAX_PIECE_SIZE, Math.max(MIN_PIECE_SIZE, value));
+}
+
 const KITS: Record<SpaceId, readonly FurnitureId[]> = {
   "living-room": ["sofa", "lounge", "armchair", "coffee-table", "side-table", "rug"],
   bedroom: ["bed", "nightstand", "dresser", "bench", "armchair"],
@@ -351,6 +362,7 @@ export type PlacedPiece = {
   pieceId: FurnitureId;
   x: number;
   y: number;
+  size?: number;
 };
 
 export type SpaceDesign = {
@@ -418,11 +430,11 @@ const DEFAULTS: Record<SpaceId, SpaceDefault> = {
     tags: ["tropical-modern"],
     constraints: ["no-people", "evening-light"],
     pieces: [
-      { pieceId: "rug", x: 50, y: 55 },
-      { pieceId: "sofa", x: 50, y: 22 },
-      { pieceId: "lounge", x: 78, y: 34 },
-      { pieceId: "coffee-table", x: 50, y: 48 },
-      { pieceId: "side-table", x: 24, y: 32 },
+      { pieceId: "rug", x: 50, y: 48 },
+      { pieceId: "sofa", x: 50, y: 32 },
+      { pieceId: "lounge", x: 78, y: 42 },
+      { pieceId: "coffee-table", x: 50, y: 54 },
+      { pieceId: "side-table", x: 22, y: 38 },
     ],
   },
   bedroom: {
@@ -434,10 +446,10 @@ const DEFAULTS: Record<SpaceId, SpaceDefault> = {
     tags: ["coastal"],
     constraints: ["no-people"],
     pieces: [
-      { pieceId: "bed", x: 48, y: 32 },
-      { pieceId: "nightstand", x: 22, y: 26 },
-      { pieceId: "nightstand", x: 74, y: 26 },
-      { pieceId: "armchair", x: 78, y: 52 },
+      { pieceId: "bed", x: 50, y: 36 },
+      { pieceId: "nightstand", x: 24, y: 34 },
+      { pieceId: "nightstand", x: 76, y: 34 },
+      { pieceId: "armchair", x: 80, y: 56 },
     ],
   },
   "dining-room": {
@@ -449,11 +461,11 @@ const DEFAULTS: Record<SpaceId, SpaceDefault> = {
     tags: ["collected"],
     constraints: ["no-people", "evening-light"],
     pieces: [
-      { pieceId: "dining-table", x: 50, y: 46 },
-      { pieceId: "dining-chair", x: 38, y: 58 },
-      { pieceId: "dining-chair", x: 62, y: 58 },
-      { pieceId: "dining-chair", x: 38, y: 36 },
-      { pieceId: "sideboard", x: 50, y: 18 },
+      { pieceId: "dining-table", x: 50, y: 48 },
+      { pieceId: "dining-chair", x: 34, y: 58 },
+      { pieceId: "dining-chair", x: 66, y: 58 },
+      { pieceId: "dining-chair", x: 50, y: 36 },
+      { pieceId: "sideboard", x: 50, y: 16 },
     ],
   },
   kitchen: {
@@ -725,6 +737,7 @@ function asPieces(raw: unknown, fallbackChair: string | null, fallbackX: number)
         chairId?: unknown;
         x?: unknown;
         y?: unknown;
+        size?: unknown;
       };
       const pieceId = resolvePieceId(record.pieceId) ?? resolvePieceId(record.chairId);
       if (!pieceId) {
@@ -739,6 +752,10 @@ function asPieces(raw: unknown, fallbackChair: string | null, fallbackX: number)
         typeof record.y === "number" && Number.isFinite(record.y)
           ? clamp(record.y, 8, 92)
           : (kind?.depth ?? 40);
+      const size =
+        typeof record.size === "number" && Number.isFinite(record.size)
+          ? pieceSize({ size: record.size })
+          : 1;
       return [
         {
           key:
@@ -748,6 +765,7 @@ function asPieces(raw: unknown, fallbackChair: string | null, fallbackX: number)
           pieceId,
           x,
           y,
+          size,
         },
       ];
     });

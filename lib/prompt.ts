@@ -99,4 +99,4 @@ function toPhotographyDirection(text: string): string {
 }
 
 export const DISCLOSURE =
-  "Concept images, not a specification or quote." as const;
+  "An illustration of a space — not a photograph, not a specification, and not a quote." as const;

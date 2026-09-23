@@ -18,4 +18,5 @@ function run(command, args) {
 
 run(bin("prisma"), ["generate"]);
 run(bin("prisma"), ["db", "push", "--skip-generate"]);
+run(process.execPath, ["prisma/seed.mjs"]);
 run(bin("next"), ["build"]);

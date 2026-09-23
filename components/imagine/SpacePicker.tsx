@@ -11,7 +11,7 @@ export function SpacePicker({
   return (
     <div className="space-y-12 py-8 sm:py-10">
       <p className="max-w-xl text-base leading-7 text-ink-soft">
-        Choose the kind of space. Each one is a different empty shell — then a
+        Choose the kind of space. Each shell is an illustration — then a
         palette, the furniture that belongs there, light, and dress.
       </p>
       {spaceGroups.map((group) => {

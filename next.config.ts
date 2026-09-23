@@ -16,6 +16,11 @@ const noIndexGenerated = [
 
 const nextConfig: NextConfig = {
   agentRules: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "11mb",
+    },
+  },
   outputFileTracingIncludes: {
     "*": ["./prisma/dev.db"],
   },
